@@ -1,0 +1,16 @@
+section{
+    margin: 64px
+}
+
+.logo{
+    width: 163px;
+    height: 81px;
+}
+
+h1{
+    margin-bottom: 8px;
+}
+
+.line{
+    margin: 0px 30px;
+}

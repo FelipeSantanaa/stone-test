@@ -6,3 +6,14 @@
     --font-color-secondary: #6E7E90;
     --input-color: #008B57;
 }
+
+h1{
+    font-size: 18px !important;
+    color: var(--font-color-primary);
+}
+
+p{
+    font-size: 14px;
+    color: var(--secondary-color);
+}
+
