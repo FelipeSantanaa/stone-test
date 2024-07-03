@@ -17,3 +17,11 @@ p{
     color: var(--secondary-color);
 }
 
+body {
+    width: 99vw;
+    height: 99vh;
+    background-image: url('/assets/images/background.png');
+    background-repeat: no-repeat;
+    background-size: cover;
+    overflow-x: hidden;
+}
