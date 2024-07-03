@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Output } from '@angular/core';
 
 @Component({
   selector: 'app-result',
@@ -8,5 +8,8 @@ import { Component } from '@angular/core';
   styleUrl: './result.component.css'
 })
 export class ResultComponent {
+  @Output() valorCalculo!: number;
+  @Output() taxa!: number;
+  @Output() currentDolar!: number;
 
 }

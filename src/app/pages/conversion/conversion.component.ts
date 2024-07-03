@@ -1,5 +1,4 @@
 import { Component } from '@angular/core';
-import { HeaderComponent } from '../../components/header/header.component';
 import { Router } from '@angular/router';
 import {
   FormControl,
@@ -8,6 +7,12 @@ import {
   Validators,
 } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+
+import { HeaderComponent } from '../../components/header/header.component';
+
+import { MoedaService } from '../../service/moeda.service';
+
+import { moedaInterface } from '../../interface/moeda-interface';
 
 @Component({
   selector: 'app-conversion',
@@ -21,8 +26,9 @@ export class ConversionComponent {
   valor!: number;
   taxaDoEstado!: number;
   areInputsValid: boolean = true;
+  moedaReturn?: moedaInterface;
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private moedaService: MoedaService) {
     this.form = new FormGroup({
       valor: new FormControl('', [Validators.required, Validators.min(0)]),
       taxaDoEstado: new FormControl('', [
@@ -33,9 +39,18 @@ export class ConversionComponent {
     });
   }
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.getDolar();
+  }
 
   onSubmit() {
     this.router.navigate(['/result']);
+  }
+
+  getDolar() {
+    this.moedaService.getDolar().subscribe((data: any) => {
+      this.moedaReturn = data.USDBRL;
+      console.log(this.moedaReturn);
+    });
   }
 }
