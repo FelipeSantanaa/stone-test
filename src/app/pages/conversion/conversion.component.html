@@ -4,27 +4,26 @@
         <div class="d-flex form-section">
         <div>
             <label for="valor" class="form-label">Valor</label>
-            <input type="text" class="form-control" id="valor" formControlName="valor" [(ngModel)]="valor">
+            <input currencyMask [options]="{align: 'left', decimal: ','}" type="text" class="form-control" id="valor" formControlName="valor">
         </div>
         <div>
             <label for="taxaDoEstado" class="form-label">Taxa do Estado</label>
-            <input type="text" class="form-control" id="taxaDoEstado" formControlName="taxaDoEstado" [(ngModel)]="taxaDoEstado">
+            <input readonly currencyMask [options]="{ prefix:'' ,suffix: ' % ', decimal: '.', align: 'left'}" class="form-check-input" type="text" class="form-control" id="taxaDoEstado" formControlName="taxaDoEstado" [(ngModel)]="taxaDoEstado">
         </div>
     </div>
     <div class="formRadio">
     <label for="valor" class="form-label">Tipo de compra</label>
-    <div class="mb-3">
+    <div>
         <div class="form-check form-check-inline">
             <input class="form-check-input" type="radio" name="tipoDeCompra" id="inlineRadio1" value="dinheiro" formControlName="tipoDeCompra">
             <label class="form-check-label" for="dinheiro">Dinheiro</label>
           </div>
           <div class="form-check form-check-inline">
-            <input class="form-check-input" type="radio" name="tipoDeCompra" id="inlineRadio2" value="cartao" formControlName="tipoDeCompra">
+            <input class="form-check-input" type="radio" name="tipoDeCompra" id="inlineRadio1" value="cartao" formControlName="tipoDeCompra">
             <label class="form-check-label" for="cartao">Cartão</label>
           </div>
         </div>
     </div>
     <button type="submit" class="btn btn-primary" (click)="onSubmit()" [disabled]="form.invalid"><img src="../../../assets/svg/convertion.svg" alt="Conversion image" class="convertion-image">Converter</button>
-    <!-- <button type="submit" class="btn btn-primary btn-disabled" disabled *ngIf="areInputsValid"><img src="../../../assets/svg/convertion.svg" alt="Conversion image" class="convertion-image">Converter</button> -->
       </form>
 </section>
