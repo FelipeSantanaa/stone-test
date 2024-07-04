@@ -18,13 +18,18 @@ import { CurrencyMaskModule } from 'ng2-currency-mask';
 @Component({
   selector: 'app-conversion',
   standalone: true,
-  imports: [CommonModule, HeaderComponent, ReactiveFormsModule, CurrencyMaskModule],
+  imports: [
+    CommonModule,
+    HeaderComponent,
+    ReactiveFormsModule,
+    CurrencyMaskModule,
+  ],
   templateUrl: './conversion.component.html',
   styleUrl: './conversion.component.css',
 })
 export class ConversionComponent {
   form!: FormGroup;
-  valor: number = 0;
+  valor: any = 0;
   taxaDoEstado: number = 8.87;
   dolar!: any;
   moedaReturn?: moedaInterface;
@@ -46,22 +51,72 @@ export class ConversionComponent {
     this.getDolar();
   }
 
-  calculateValor(){
+// Calcular o valor com imposto do estado
+// private calculateValueStateTax(valorEmDolar: number, taxaDoEstado: number): number {
+//   return valorEmDolar + (valorEmDolar * (taxaDoEstado / 100));
+// }
+
+// Calcular o valor total para compra com dinheiro
+// private calculateValueMoney(valorComImpostoEstado: any, dolar: any, iofMoney: any): any {
+//   console.log(valorComImpostoEstado, dolar, iofMoney);
+//   console.log(valorComImpostoEstado * (dolar + (dolar * (iofMoney / 100))));
+//   return valorComImpostoEstado * (dolar + (dolar * (iofMoney / 100)));
+// }
+
+// Calcular o valor total para compra com cartão
+// private calculateValueCard(valorComImpostoEstado: number, valorEmDolar: number, dolar: number, iofCartao: number): number {
+//   const valorComIofCartao = valorComImpostoEstado + (valorEmDolar * (iofCartao / 100));
+//   return valorComIofCartao * dolar;
+// }
+
+// calculateValor() {
+//   if (this.form.valid) {
+//     const valorEmDolar = this.form.get('valor')?.value;
+//     const taxaDoEstado = this.form.get('taxaDoEstado')?.value;
+//     const tipoDeCompra = this.form.get('tipoDeCompra')?.value;
+//     this.dolar = this.moedaReturn?.bid;
+
+//     const valorComImpostoEstado = this.calculateValueStateTax(valorEmDolar, taxaDoEstado);
+
+//     if (tipoDeCompra === 'dinheiro') {
+//       this.valor = this.calculateValueMoney(valorComImpostoEstado, this.dolar, this.iofMoney);
+//     } else if (tipoDeCompra === 'cartao') {
+//       this.valor = this.calculateValueCard(valorComImpostoEstado, valorEmDolar, this.dolar, this.iofCard);
+//     }
+
+//     console.log(this.valor);
+//   } else {
+//     console.error('Formulário inválido');
+//   }
+// }
+
+
+  calculateValor() {
+    const valorEmDolar = this.form.get('valor')?.value;
+    const taxaDoEstado = this.form.get('taxaDoEstado')?.value;
+    const tipoDeCompra = this.form.get('tipoDeCompra')?.value;
+    this.dolar = this.moedaReturn?.bid;
+    
     if (this.form.valid) {
-      const valor = this.form.get('valor')?.value;
-      const taxaDoEstado = this.form.get('taxaDoEstado')?.value;
-      const tipoDeCompra = this.form.get('tipoDeCompra')?.value;
-      this.dolar = this.moedaReturn?.bid;
-      console.log(valor, taxaDoEstado, tipoDeCompra, this.dolar);
+      console.log(tipoDeCompra)
+  
       if (tipoDeCompra === 'dinheiro') {
-        this.valor = valor * this.dolar;
-      } else {
-        this.valor = valor * this.dolar;
-        this.valor = this.valor + this.valor * (taxaDoEstado / 100);
+        // [(Valor em dólar) + (imposto do Estado)] x (valor do dólar + IOF da compra de dólar)
+        const valorComImpostoEstado = valorEmDolar + (valorEmDolar * (taxaDoEstado / 100));
+        this.valor = valorComImpostoEstado * (this.dolar + (this.dolar * (this.iofMoney / 100)));
+        console.log('Valor final com dinheiro', this.valor);
+  
+      } else if (tipoDeCompra === 'cartao') {
+        // [(Valor em dólar) + (imposto do Estado) + (IOF de transações internacionais)] x (valor do dólar)
+        const valorComImpostoEstado = valorEmDolar + (valorEmDolar * (taxaDoEstado / 100));
+        const valorComIofCartao = valorComImpostoEstado + (valorEmDolar * (this.iofCard / 100));
+        this.valor = valorComIofCartao * this.dolar;
+        console.log('Valor final com cartão',this.valor);
       }
     } else {
+      // Formulário inválido - pode adicionar lógica de tratamento de erro aqui
+      console.error('Formulário inválido');
     }
-  
   }
 
   onSubmit() {
