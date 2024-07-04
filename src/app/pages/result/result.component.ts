@@ -7,25 +7,18 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [HeaderComponent],
   templateUrl: './result.component.html',
-  styleUrl: './result.component.css'
+  styleUrl: './result.component.css',
 })
 export class ResultComponent {
   @Output() valorCalculo!: number;
   @Output() taxa!: number;
   @Output() currentDolar!: number;
 
-  constructor(
-    private route: Router
-  ){
+  constructor(private route: Router) {}
 
-  }
+  ngOnInit() {}
 
-  ngOnInit(){
-
-  }
-
-  backToHome(){
+  backToHome() {
     this.route.navigate(['']);
   }
-
 }
