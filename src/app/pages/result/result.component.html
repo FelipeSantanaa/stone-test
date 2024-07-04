@@ -6,11 +6,11 @@
                 alt="Arrow left" class="arrow-left">Voltar</button>
         <div class="result">
             <h1>O resultado do cálculo é</h1>
-            <p>R$ 240,56</p>
+            <p>R{{valor | currency}}</p>
         </div>
         <div class="tax">
-            <p><b>Compra no dinheiro e taxa de </b>5.3%</p>
-            <p><b>Cotação do dólar </b>$1,00 = R$ 5,20</p>
+            <p><b>Compra no dinheiro e taxa de </b>{{taxa}}%</p>
+            <p><b>Cotação do dólar </b>$1,00 = R$ {{dolar}}</p>
         </div>
     </main>
 </section>

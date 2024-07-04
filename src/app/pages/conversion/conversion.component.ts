@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { HeaderComponent } from '../../components/header/header.component';
 
 import { MoedaService } from '../../service/moeda.service';
+import { SharedService } from '../../service/shared.service';
 
 import { moedaInterface } from '../../interface/moeda-interface';
 import { CurrencyMaskModule } from 'ng2-currency-mask';
@@ -36,7 +37,7 @@ export class ConversionComponent {
   iofMoney: number = 1.1;
   iofCard: number = 6.4;
 
-  constructor(private router: Router, private moedaService: MoedaService) {
+  constructor(private router: Router, private moedaService: MoedaService, private sharedService: SharedService) {
     this.form = new FormGroup({
       valor: new FormControl('', [Validators.required, Validators.min(0)]),
       taxaDoEstado: new FormControl('', [
@@ -51,73 +52,79 @@ export class ConversionComponent {
     this.getDolar();
   }
 
-// Calcular o valor com imposto do estado
-// private calculateValueStateTax(valorEmDolar: number, taxaDoEstado: number): number {
-//   return valorEmDolar + (valorEmDolar * (taxaDoEstado / 100));
-// }
-
-// Calcular o valor total para compra com dinheiro
-// private calculateValueMoney(valorComImpostoEstado: any, dolar: any, iofMoney: any): any {
-//   console.log(valorComImpostoEstado, dolar, iofMoney);
-//   console.log(valorComImpostoEstado * (dolar + (dolar * (iofMoney / 100))));
-//   return valorComImpostoEstado * (dolar + (dolar * (iofMoney / 100)));
-// }
-
-// Calcular o valor total para compra com cartão
-// private calculateValueCard(valorComImpostoEstado: number, valorEmDolar: number, dolar: number, iofCartao: number): number {
-//   const valorComIofCartao = valorComImpostoEstado + (valorEmDolar * (iofCartao / 100));
-//   return valorComIofCartao * dolar;
-// }
-
-// calculateValor() {
-//   if (this.form.valid) {
-//     const valorEmDolar = this.form.get('valor')?.value;
-//     const taxaDoEstado = this.form.get('taxaDoEstado')?.value;
-//     const tipoDeCompra = this.form.get('tipoDeCompra')?.value;
-//     this.dolar = this.moedaReturn?.bid;
-
-//     const valorComImpostoEstado = this.calculateValueStateTax(valorEmDolar, taxaDoEstado);
-
-//     if (tipoDeCompra === 'dinheiro') {
-//       this.valor = this.calculateValueMoney(valorComImpostoEstado, this.dolar, this.iofMoney);
-//     } else if (tipoDeCompra === 'cartao') {
-//       this.valor = this.calculateValueCard(valorComImpostoEstado, valorEmDolar, this.dolar, this.iofCard);
-//     }
-
-//     console.log(this.valor);
-//   } else {
-//     console.error('Formulário inválido');
-//   }
-// }
-
-
   calculateValor() {
-    const valorEmDolar = this.form.get('valor')?.value;
-    const taxaDoEstado = this.form.get('taxaDoEstado')?.value;
-    const tipoDeCompra = this.form.get('tipoDeCompra')?.value;
-    this.dolar = this.moedaReturn?.bid;
-    
     if (this.form.valid) {
-      console.log(tipoDeCompra)
-  
-      if (tipoDeCompra === 'dinheiro') {
-        // [(Valor em dólar) + (imposto do Estado)] x (valor do dólar + IOF da compra de dólar)
-        const valorComImpostoEstado = valorEmDolar + (valorEmDolar * (taxaDoEstado / 100));
-        this.valor = valorComImpostoEstado * (this.dolar + (this.dolar * (this.iofMoney / 100)));
-        console.log('Valor final com dinheiro', this.valor);
-  
-      } else if (tipoDeCompra === 'cartao') {
-        // [(Valor em dólar) + (imposto do Estado) + (IOF de transações internacionais)] x (valor do dólar)
-        const valorComImpostoEstado = valorEmDolar + (valorEmDolar * (taxaDoEstado / 100));
-        const valorComIofCartao = valorComImpostoEstado + (valorEmDolar * (this.iofCard / 100));
-        this.valor = valorComIofCartao * this.dolar;
-        console.log('Valor final com cartão',this.valor);
+      const valorEmDolar = this.form.get('valor')?.value;
+      const taxaDoEstado = this.form.get('taxaDoEstado')?.value;
+      const tipoDeCompra = this.form.get('tipoDeCompra')?.value;
+      this.dolar = this.moedaReturn?.bid || 0;
+
+      this.sharedService.setValorOriginal(valorEmDolar);
+
+      if (valorEmDolar && taxaDoEstado && tipoDeCompra && this.dolar) {
+        const valorComImpostoEstado = this.calcularValorComImpostoEstado(valorEmDolar, taxaDoEstado);
+
+        if (tipoDeCompra === 'dinheiro') {
+          this.valor = this.calcularValorComDinheiro(valorComImpostoEstado, this.dolar, this.iofMoney);
+        } else if (tipoDeCompra === 'cartao') {
+          this.valor = this.calcularValorComCartao(valorComImpostoEstado, valorEmDolar, this.dolar, this.iofCard);
+        }
+
+        this.sharedService.setValor(this.valor);
+        this.sharedService.setIof(tipoDeCompra === 'dinheiro' ? this.iofMoney : this.iofCard);
+        this.sharedService.setTaxa(taxaDoEstado);
+        this.sharedService.setDolar(this.dolar);
+
+      } else {
+        console.error('Valores do formulário estão faltando');
       }
     } else {
-      // Formulário inválido - pode adicionar lógica de tratamento de erro aqui
       console.error('Formulário inválido');
     }
   }
+
+  private calcularValorComImpostoEstado(valorEmDolar: number, taxaDoEstado: number): number {
+    return valorEmDolar + (valorEmDolar * (taxaDoEstado / 100));
+  }
+
+  private calcularValorComDinheiro(valorComImpostoEstado: number, dolar: number, iofMoney: number): number {
+    return valorComImpostoEstado * (dolar + (dolar * (iofMoney / 100)));
+  }
+
+  private calcularValorComCartao(valorComImpostoEstado: number, valorEmDolar: number, dolar: number, iofCard: number): number {
+    const valorComiofCard = valorComImpostoEstado + (valorEmDolar * (iofCard / 100));
+    return valorComiofCard * dolar;
+  }
+
+
+
+  // calculateValor() {
+  //   const valorEmDolar = this.form.get('valor')?.value;
+  //   const taxaDoEstado = this.form.get('taxaDoEstado')?.value;
+  //   const tipoDeCompra = this.form.get('tipoDeCompra')?.value;
+  //   this.dolar = this.moedaReturn?.bid;
+    
+  //   if (this.form.valid) {
+  //     console.log(tipoDeCompra)
+  
+  //     if (tipoDeCompra === 'dinheiro') {
+  //       // [(Valor em dólar) + (imposto do Estado)] x (valor do dólar + IOF da compra de dólar)
+  //       const valorComImpostoEstado = valorEmDolar + (valorEmDolar * (taxaDoEstado / 100));
+  //       this.valor = valorComImpostoEstado * (this.dolar + (this.dolar * (this.iofMoney / 100)));
+  //       console.log('Valor final com dinheiro', this.valor);
+  
+  //     } else if (tipoDeCompra === 'cartao') {
+  //       // [(Valor em dólar) + (imposto do Estado) + (IOF de transações internacionais)] x (valor do dólar)
+  //       const valorComImpostoEstado = valorEmDolar + (valorEmDolar * (taxaDoEstado / 100));
+  //       const valorComiofCard = valorComImpostoEstado + (valorEmDolar * (this.iofCard / 100));
+  //       this.valor = valorComiofCard * this.dolar;
+  //       console.log('Valor final com cartão',this.valor);
+  //     }
+  //   } else {
+  //     // Formulário inválido - pode adicionar lógica de tratamento de erro aqui
+  //     console.error('Formulário inválido');
+  //   }
+  // }
 
   onSubmit() {
     this.calculateValor();
