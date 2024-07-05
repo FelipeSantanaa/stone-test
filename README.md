@@ -1,27 +1,40 @@
-# TesteStonePayments
+# Conversor de Moedas - Stone Currency
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 17.3.7.
+Este é um projeto de conversão de valores de dólar para real, desenvolvido em Angular 17, utilizando TypeScript e Bootstrap 5.3. O projeto consome uma API de Moedas para obter dados reais do dólar, IOF, impostos e taxas. A aplicação possui duas etapas: uma para inserir o valor que se deseja converter e outra para mostrar os valores convertidos.
 
-## Development server
+## Tecnologias Utilizadas
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+- Angular 17
+- TypeScript
+- Bootstrap 5.3
+- ng2-currency-mask
+- [Vercel](https://stone-test-beta.vercel.app/) (para deploy)
+- Testes unitários utilizando JEST (em andamento)
 
-## Code scaffolding
+## Funcionalidades
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+A aplicação mostra os seguintes dados:
 
-## Build
+- Cotação do dólar
+- IOF
+- Total em dólar sem imposto
+- Total em dólar com imposto
+- Total em real sem imposto
+- Total em real com imposto
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## API de Moedas
 
-## Running unit tests
+Para realizar os cálculos, foi necessário consultar a cotação atual na [API de Moedas](https://docs.awesomeapi.com.br/api-de-moedas)  
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+## Preview
 
-## Running end-to-end tests
+- Página Inicial
+![image](https://github.com/FelipeSantanaa/stone-test/assets/69217173/e50d86b2-e9f7-4fe6-a21b-71d65bb69dbf)
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+- Página com o valor convertido
+![image](https://github.com/FelipeSantanaa/stone-test/assets/69217173/ff6be5c9-5e35-49fc-9202-ac0d2d9bccc1)
 
-## Further help
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Stone
+
+Este projeto foi desenvolvido para um teste que encontrei na internet da empresa Stona, para obter mais informações acesse [PROJETO OFICIAL](https://github.com/stone-payments/template-desafio-web?tab=readme-ov-file)
